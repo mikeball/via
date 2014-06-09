@@ -57,6 +57,17 @@
             :user nil}))))
 
 
+(deftest generated-dispatch-allows-public-path-methods
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :public]}]]
+
+                             ; :authenticate (fn [_] {:roles [:a-role]})
+
+                             })
+           {:uri "/a"
+            :request-method :get}))))
+
+
 (deftest generated-dispatch-allows-valid-roles
    (is (= {:status 200 :body "ok"}
           ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]
