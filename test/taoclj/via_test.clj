@@ -59,11 +59,7 @@
 
 (deftest generated-dispatch-allows-public-path-methods
    (is (= {:status 200 :body "ok"}
-          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :public]}]]
-
-                             ; :authenticate (fn [_] {:roles [:a-role]})
-
-                             })
+          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :public]}]]})
            {:uri "/a"
             :request-method :get}))))
 
