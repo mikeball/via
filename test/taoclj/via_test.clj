@@ -34,12 +34,6 @@
           {:uri "/" :request-method :get}))))
 
 
-(deftest content-type-is-set-on-response
-  (is (= {:status 200 :body "hi"}
-         ((via/fn-dispatch {:routes [["/" {:get [(fn [_] {:status 200 :body "hi"}) :public]}]]})
-          {:uri "/" :request-method :get}))))
-
-
 (deftest generated-dispatch-returns-not-found-on-no-path-match
    (is (= {:status 404}
           ((via/fn-dispatch {:routes         '(["/a" {}])
