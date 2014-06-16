@@ -73,7 +73,6 @@
 
 ;; Routing Builder testings
 
-
 (deftest handlers-are-prepended-to-list-of-roles
   (are [method handler roles expected]
        (= expected (routing/build-handler-roles-list method handler roles))
@@ -82,6 +81,9 @@
        :post 'h [:a :b] '(h :a :b)
        :name "n" [:a :b] '("n") ;; name key does not get roles appended
        :regex "r" [:a :b] '("r") ;; regex key does not append roles
+
+       :unknown "u" [:a :b] '("u") ; unknown keys are left alone
+
        ))
 
 
@@ -104,6 +106,22 @@
 
 
 
+; anonomous functions are not var quoted
+(deftest anonomous-functions-are-not-var-quoted
+  (is (=
+         (routing/set-route-roles ["/" {:get 'h :name "x"}] [:role1 :role2])
+
+         ["/" {:get '(h :role1 :role2) :name '("x")}]
+
+         )))
+
+
+
+
+; vars are not var quoted
+
+
+; direct named symbols are var quoted
 
 
 

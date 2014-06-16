@@ -82,7 +82,31 @@
 
 
 
-; (clojure.test/run-tests 'taoclj.via-test)
+(deftest matched-anonomous-functions-return
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes
+                             [["/" {:get [(fn [_] {:status 200 :body "ok"}) :public] }]]})
+
+           {:uri "/" :request-method :get}))))
+
+
+
+(defn a-handler [_] {:status 200 :body "ok"})
+
+(deftest matched-function-symbols-return
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes
+                             [["/" {:get [a-handler :public]}]]})
+           {:uri "/" :request-method :get}))))
+
+(deftest matched-var-quoted-functions-return
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes
+                             [["/" {:get [#'a-handler :public]}]]})
+           {:uri "/" :request-method :get}))))
+
+
+
 
 
 
