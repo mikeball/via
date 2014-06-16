@@ -13,6 +13,8 @@
                 ":routes setting is required and must be a sequence of routes"))))
 
 
+
+
 (defn fn-dispatch
   "Build a handler function and enforces role restrictions
 
@@ -26,7 +28,8 @@
   (let [routes           (:routes settings)
         not-found        (default-handler (:not-found settings) 404)
         not-authorized   (default-handler (:not-authorized settings) 403)
-        authenticate     (:authenticate settings)]
+        authenticate     (:authenticate settings)
+        role-key         (or (:roles-key settings) :roles)]
 
     (fn [request]
 
@@ -36,7 +39,7 @@
                                  not-authorized
                                  (:uri request)
                                  (handler-method request)
-                                 (:roles user))
+                                 (role-key user))
             handler (match :handler)]
 
         (-> request

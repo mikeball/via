@@ -72,6 +72,24 @@
             :request-method :get}))))
 
 
+(deftest generated-dispatch-allows-custom-role-keys
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]
+                             :authenticate (fn [_] {:user/role [:a-role]})
+                             :roles-key    :user/role })
+           {:uri "/a"
+            :request-method :get}))))
+
+
+(deftest generated-dispatch-allows-roles-as-set
+   (is (= {:status 200 :body "ok"}
+          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a/role]}]]
+                             :authenticate (fn [_] {:user/role #{:a/role}})
+                             :roles-key    :user/role })
+           {:uri "/a"
+            :request-method :get}))))
+
+
 (deftest path-parameters-are-passed-to-handlers
    (is (= "1"
           (:body ((via/fn-dispatch {:routes [["/a/:id"
