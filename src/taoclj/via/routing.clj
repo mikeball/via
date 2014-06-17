@@ -71,27 +71,13 @@
 
 
 
-(defn var-quote-function-symbols [f]
-  (let [t (str (type f))]
-    (cond (not (fn? f)) f ; ignore anything that's not a function
 
-          (and (fn? f)
-               (.contains t "$fn__")) f ; ignore anonomous functions
-
-          :else
-          ; refer to the fuction by name so that function re defn's are picked up during development
-          (-> t
-              (string/replace "class " "")
-              (string/replace "_" "-")
-              (string/replace "$" "/")
-              (symbol)
-              (resolve)))))
 
 
 (defn build-handler-roles-list [key value roles]
   (if-not (util/in? [:get :post :put :delete :head :options :websocket :sse] key)
     (list value)
-    (cons (var-quote-function-symbols value) roles)))
+    (cons (util/varify value) roles)))
 
 
 (defn set-route-roles

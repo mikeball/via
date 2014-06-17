@@ -1,10 +1,13 @@
 (ns taoclj.via
-  (:require [taoclj.via.routing :as routing]
+  (:require [taoclj.via.util :as util]
+            [taoclj.via.routing :as routing]
             [taoclj.via.request :refer [handler-method]]))
 
 
 (defn default-handler [handler status]
-  (if handler handler (fn [_] {:status status})))
+  (if handler
+    (util/varify handler)
+    (fn [_] {:status status})))
 
 
 (defn validate [settings]
@@ -28,7 +31,7 @@
   (let [routes           (:routes settings)
         not-found        (default-handler (:not-found settings) 404)
         not-authorized   (default-handler (:not-authorized settings) 403)
-        authenticate     (:authenticate settings)
+        authenticate     (util/varify (:authenticate settings))
         roles-key        (or (:roles-key settings) :roles)]
 
     (fn [request]
