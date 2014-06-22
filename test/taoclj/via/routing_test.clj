@@ -74,54 +74,55 @@
 ;; Routing Builder testings
 
 (deftest handlers-are-prepended-to-list-of-roles
-  (are [method handler roles expected]
-       (= expected (routing/build-handler-roles-list method handler roles))
+  (are [method]
+       (= :ok ((first (routing/build-handler-roles-list
+                       method
+                       (fn [r] :ok)
+                       [:a :b])) {}))
+       :get
+       :post
+       :put
+       :delete
+       :head
+       :options
+       :websocket
+       :sse ))
 
-       :get 'h [:a :b] '(h :a :b)
-       :post 'h [:a :b] '(h :a :b)
-       :name "n" [:a :b] '("n") ;; name key does not get roles appended
-       :regex "r" [:a :b] '("r") ;; regex key does not append roles
-
-       :unknown "u" [:a :b] '("u") ; unknown keys are left alone
-
-       ))
+(deftest special-and-unknown-keys-are-passed
+  (are [key value]
+       (= value
+          (first (routing/build-handler-roles-list key value [])))
+       :name 'n
+       :regex 'r
+       :unknown 'u))
 
 
 (deftest roles-are-set-on-relevant-methods
-  (is (= (routing/set-route-roles ["/" {:get 'h :name "x"}] [:role1 :role2])
-         ["/" {:get '(h :role1 :role2) :name '("x")}])))
+  (is (= '(:role1 :role2)
+         (-> (routing/set-route-roles ["/" {:get 'h :name "x"}] [:role1 :role2])
+             second
+             :get
+             rest) )))
 
 
+(def built-routes
+  (routing/build-routes '(:a :b ["/a" {:get h1}] ["/b" {:get h2}]
+                          :c :d ["/c" {:get h3}] ["/d" {:get h4}])))
 
 (deftest build-sets-roles
-  (is (= (routing/build-routes '(:a :b ["/a" {:get h1}] ["/b" {:get h2}]))
-         '(["/a" {:get (h1 :a :b)}] ["/b" {:get (h2 :a :b)}])))
+  (are [place-fn expected-roles]
+       (= expected-roles
+          (-> built-routes place-fn second :get rest))
 
-  (is (= (routing/build-routes '(:a :b ["/a" {:get h1}] ["/b" {:get h2}]
-                                 :c :d ["/c" {:get h3}] ["/d" {:get h4}]))
-         '(["/a" {:get (h1 :a :b)}] ["/b" {:get (h2 :a :b)}]
-           ["/c" {:get (h3 :c :d)}] ["/d" {:get (h4 :c :d)}]))))
-
-
-
-
-
-; anonomous functions are not var quoted
-(deftest anonomous-functions-are-not-var-quoted
-  (is (=
-         (routing/set-route-roles ["/" {:get 'h :name "x"}] [:role1 :role2])
-
-         ["/" {:get '(h :role1 :role2) :name '("x")}]
-
-         )))
+       first '(:a :b)
+       second '(:a :b)
+       (nth 2) '(:c :d)
+       (nth 3) '(:c :d)))
 
 
 
 
-; vars are not var quoted
 
-
-; direct named symbols are var quoted
 
 
 

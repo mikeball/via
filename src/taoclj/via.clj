@@ -6,7 +6,7 @@
 
 (defn default-handler [handler status]
   (if handler
-    (util/varify handler)
+    (fn [r] (handler r))
     (fn [_] {:status status})))
 
 
@@ -31,7 +31,7 @@
   (let [routes           (:routes settings)
         not-found        (default-handler (:not-found settings) 404)
         not-authorized   (default-handler (:not-authorized settings) 403)
-        authenticate     (util/varify (:authenticate settings))
+        authenticate     (:authenticate settings)
         roles-key        (or (:roles-key settings) :roles)]
 
     (fn [request]

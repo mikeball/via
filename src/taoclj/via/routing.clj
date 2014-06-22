@@ -71,13 +71,10 @@
 
 
 
-
-
-
 (defn build-handler-roles-list [key value roles]
   (if-not (util/in? [:get :post :put :delete :head :options :websocket :sse] key)
     (list value)
-    (cons (util/varify value) roles)))
+    (cons (fn [r] (value r)) roles)))
 
 
 (defn set-route-roles
