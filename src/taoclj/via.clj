@@ -6,7 +6,7 @@
 
 (defn default-handler [handler status]
   (if handler
-    (fn [r] (handler r))
+    (util/varify handler)
     (fn [_] {:status status})))
 
 

@@ -121,7 +121,13 @@
 
 
 
+(deftest anonomous-functions-are-not-var-quoted
+  (is (=
+         (routing/set-route-roles ["/" {:get 'h :name "x"}] [:role1 :role2])
 
+         ["/" {:get '(h :role1 :role2) :name '("x")}]
+
+         )))
 
 
 
