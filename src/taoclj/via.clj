@@ -36,17 +36,15 @@
 
     (fn [request]
 
-      (let [user (if authenticate (authenticate request))
-            match (routing/match routes
+      (let [match (routing/match routes
                                  not-found
                                  not-authorized
                                  (:uri request)
                                  (handler-method request)
-                                 (roles-key user))
+                                 (roles-key (:user request)))
             handler (match :handler)]
 
         (-> request
-            (assoc :user user)
             (assoc :params (merge (request :params)
                                   (match :path-params)))
             (handler))))))

@@ -66,27 +66,27 @@
 
 (deftest generated-dispatch-allows-valid-roles
    (is (= {:status 200 :body "ok"}
-          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]
-                             :authenticate (fn [_] {:roles [:a-role]})})
+          ((via/fn-dispatch {:routes [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]})
            {:uri "/a"
+            :user {:roles [:a-role]}
             :request-method :get}))))
 
 
 (deftest generated-dispatch-allows-custom-role-keys
    (is (= {:status 200 :body "ok"}
-          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]
-                             :authenticate (fn [_] {:user/role [:a-role]})
-                             :roles-key    :user/role })
+          ((via/fn-dispatch {:routes     [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a-role]}]]
+                             :roles-key  :user/role })
            {:uri "/a"
+            :user {:user/role [:a-role]}
             :request-method :get}))))
 
 
 (deftest generated-dispatch-allows-roles-as-set
    (is (= {:status 200 :body "ok"}
-          ((via/fn-dispatch {:routes       [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a/role]}]]
-                             :authenticate (fn [_] {:user/role #{:a/role}})
-                             :roles-key    :user/role })
+          ((via/fn-dispatch {:routes     [["/a" {:get [(fn [r] {:status 200 :body "ok"}) :a/role]}]]
+                             :roles-key  :user/role })
            {:uri "/a"
+            :user {:user/role #{:a/role}}
             :request-method :get}))))
 
 
