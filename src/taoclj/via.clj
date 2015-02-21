@@ -31,7 +31,6 @@
   (let [routes           (:routes settings)
         not-found        (default-handler (:not-found settings) 404)
         not-authorized   (default-handler (:not-authorized settings) 403)
-        authenticate     (:authenticate settings)
         roles-key        (or (:roles-key settings) :roles)]
 
     (fn [request]
